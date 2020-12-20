@@ -2,7 +2,7 @@
 * File Name           :     LineDetection.hpp
 * Created By          :     tiboiser
 * Creation Date       :     [2020-12-20 13:00]
-* Last Modified       :     [2020-12-20 18:10]
+* Last Modified       :     [2020-12-20 19:02]
 * Description         :     Objects detection header
 **********************************************************************************/
 
@@ -23,7 +23,7 @@ namespace objdetect {
 		protected:
 			// Contains each position of object identification
 			// Vector of <rows, cols>
-			std::vector<cv::Point> _arrDetection;
+			std::vector<cv::Point> _positions;
 
 			// Contains bounding box around each recognized object.
 			// Vector of <rows, cols, height, width>
@@ -40,11 +40,17 @@ namespace objdetect {
 			/* Virtual destructor of ObjectDetection class */
 			virtual ~ObjectDetection(void) = 0;
 
+			/* -- Others Methods -- */
+
 			/* Get _arrDetection attribute */
-			std::vector<cv::Point> arrDetection(void);
+			std::vector<cv::Point> positions(void);
 
 			/* Get _arrDetection attribute */
 			std::vector<cv::Rect> boundingBoxs(void);
+
+			/* Computes the recognition and stores it in class attributes
+			 * Return 1 if successful, 0 otherwise. */
+			virtual int detect(void) = 0;
 	};
 
 	/***********************************
@@ -54,7 +60,10 @@ namespace objdetect {
 
 		/* ---- Attributes ---- */
 		private:
-			float _detectionRatio; // Ratio black/white pixel on a single line. (It's [max length of continuous black pixel] / total_columns)
+			/* Ratio black/white pixel on a single line. (It's [max length of continuous black pixel] / total_columns) */
+			float _detectionRatio;
+
+
 
 		/* ---- Methods ---- */
 		private:
@@ -78,7 +87,9 @@ namespace objdetect {
 
 			/* line Detection
 			 * Detect horizontal lines and stores rows number into a vector<int>. */
-			std::vector<int> detect(std::vector<int>& proj);
+			int detect(cv::Mat m);
+
+			std::vector<int> selectLines(std::vector<int>& proj);
 
 			/* Getter of _detectionRatio */
 			float detectionRatio (void) __attribute__ ((hot));

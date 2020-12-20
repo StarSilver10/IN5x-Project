@@ -2,7 +2,7 @@
  * File Name           :     ObjectDetection.cpp
  * Created By          :     tiboiser
  * Creation Date       :     [2020-12-19 17:30]
- * Last Modified       :     [2020-12-20 18:15]
+ * Last Modified       :     [2020-12-20 19:03]
  * Description         :     Objects detection class
  **********************************************************************************/
 
@@ -21,7 +21,7 @@ using namespace objdetect;
 
 /* Default Constructor of ObjectDetection class */
 ObjectDetection::ObjectDetection(void) {
-	_arrDetection = vector<Point>();
+	_positions = vector<Point>();
 	_boundingBoxs = vector<Rect>();
 }
 
@@ -30,8 +30,8 @@ ObjectDetection::~ObjectDetection(void) {
 }
 
 /* Get _arrDetection attribute */
-vector<Point> ObjectDetection::arrDetection(void) {
-	return _arrDetection;
+vector<Point> ObjectDetection::positions(void) {
+	return _positions;
 }
 
 /* Get _arrDetection attribute */
@@ -68,7 +68,7 @@ vector<int> LineDetection::maxContinuousHorizontalProjection (const Mat& m) {
 
 /* line Detection
  * Detect horizontal lines and stores rows number into a vector<int>. */
-vector<int> LineDetection::detect(vector<int>& proj) {
+vector<int> LineDetection::selectLines(vector<int>& proj) {
 	vector<int> lines = vector<int>();
 
 	for (int i = 0; i < proj.size(); i++) {
@@ -78,6 +78,16 @@ vector<int> LineDetection::detect(vector<int>& proj) {
 	}
 
 	return lines;
+}
+
+int LineDetection::detect(Mat m) {
+	vector<int> proj = maxContinuousHorizontalProjection(m);
+	cv::reduce(m, proj, 0, cv::REDUCE_SUM, CV_32S);
+
+	vector<int> sublines = selectLines(proj);
+	// if ()
+
+	return 1;
 }
 
 /* Default Constructor of LineDetection class */

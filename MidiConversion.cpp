@@ -2,7 +2,7 @@
  *     File Name           :     MidiConversion.cpp
  *     Created By          :     tiboiser
  *     Creation Date       :     [2020-12-22 09:20]
- *     Last Modified       :     [2020-12-26 18:48]
+ *     Last Modified       :     [2020-12-26 20:23]
  *     Description         :     Convert into a midi file
  **********************************************************************************/
 
@@ -17,36 +17,6 @@
 using namespace std;
 using namespace smf;
 using namespace objdetect;
-
-int main(int argc, char** argv) {
-
-	MidiFile midifile = MidiFile();
-
-	midifile.addTrack();
-
-	for (int i = 0; i < 100; i++) {
-		if (i % 2 == 0) {
-			MidiMessage m5 = MidiMessage();
-			MidiMessage& m6 = m5;
-			m6.setCommand(0xE0, (4 * i) % 127, (4 * i) % 127);
-			midifile.addEvent(0, i*100, m6);
-		}
-		MidiMessage m2 = MidiMessage();
-		MidiMessage m3 = MidiMessage();
-		MidiMessage& m = m2;
-		MidiMessage& m4 = m3;
-		m.setCommand(0x90, 69, 127);
-		m4.setCommand(0x80, 69, 127);
-		midifile.addEvent(0, i*100, m);
-		midifile.addEvent(0, i*100 + 50, m4);
-	}
-
-	midifile.write("music.midi");
-
-	return 0;
-}
-
-
 
 /* noteToKeyNumber convert a note in a line from 0 to 6 (1 below the 5-lines, 1 above the 5-lines)
  * And convert it to frenquencies then to equivalent keyNumber in Midi */

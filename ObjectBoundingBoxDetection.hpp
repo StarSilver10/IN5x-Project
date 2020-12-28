@@ -35,9 +35,10 @@ namespace objdetect {
 		~ObjectBoundingBoxDetection(void);
 
 		/* -- Others Methods -- */
+
+		/* Détecte les boundingBoxs dans l'image m et dans la ligne délimitée par boundingBox */		
 		std::vector<cv::Rect> searchBoundingBoxes(cv::Mat& m, cv::Rect boundingBox);
-		/* line Detection
-		 * Detects boundingBoxes of objects in a bar */
+		
 		int detect(cv::Mat& m);
 	};
 }

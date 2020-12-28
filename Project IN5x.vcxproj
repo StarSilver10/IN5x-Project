@@ -23,6 +23,7 @@
     <ClCompile Include="LineDetection.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
+    <ClCompile Include="MusicNote.cpp" />
     <ClCompile Include="ObjectBoundingBoxDetection.cpp" />
     <ClCompile Include="ObjectDetection.cpp" />
     <ClCompile Include="OpenCVTest.cpp" />
@@ -30,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LineDetection.hpp" />
+    <ClInclude Include="MusicNote.hpp" />
     <ClInclude Include="ObjectBoundingBoxDetection.hpp" />
     <ClInclude Include="ObjectDetection.hpp" />
     <ClInclude Include="ProfileDetection.hpp" />

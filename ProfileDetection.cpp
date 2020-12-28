@@ -11,6 +11,8 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
+#include <numeric>
+#include <vector>
 
 using namespace std;
 using namespace cv;
@@ -20,6 +22,7 @@ using namespace objdetect;
 /***********************************
  * Class : ObjectBoundingBoxDetection
  **********************************/
+
 
 template <typename T>
 std::vector<T> linspace(double start, double end, double num)
@@ -70,6 +73,23 @@ string type2str(int type) {
     return r;
 }
 
+string objectType(int type) {
+    switch (type) {
+    case 0: return "barre";
+    case 1: return "blanche_bas";
+    case 2: return "blanche_haut";
+    case 3: return "cle_sol";
+    case 4: return "croche";
+    case 5: return "dieze_armature";
+    case 6: return "noire_bas";
+    case 7: return "noire_haut";
+    case 8: return "quatre";
+    case 9: return "ronde";
+    case 10: return "silence";
+    case 11: return "noire_pointee_bas";
+    }
+}
+
 int ProfileDetection::detect(Mat& m) {
 
 	return 1;
@@ -107,8 +127,8 @@ vector<int> ProfileDetection::profile(int d, cv::Rect boundingBox, cv::Mat& img)
     }
     
     vector<int> profiles(leftProfiles);
+
     profiles.insert(profiles.end(), rightProfiles.begin(), rightProfiles.end()); //Concatenation des deux vecteurs
-    
     return profiles;    
 }
 
@@ -121,6 +141,7 @@ vector<int> ProfileDetection::profile(int d, cv::Mat& img) {
     vector<int> indices = linspace<int>(0, img.rows-1, d / 2);
 
     for (int i = 0; i < d / 2; i++) {
+
         //find
         const uchar* row = img.ptr<uchar>(indices[i]);
         bool foundLeft = false;
@@ -142,6 +163,7 @@ vector<int> ProfileDetection::profile(int d, cv::Mat& img) {
     }
 
     vector<int> profiles(leftProfiles);
+    
     profiles.insert(profiles.end(), rightProfiles.begin(), rightProfiles.end()); //Concatenation des deux vecteurs
 
     return profiles;
@@ -161,6 +183,7 @@ vector<vector<int>> ProfileDetection::getTemplatesProfiles(int d) {
     templates.push_back(imread("imgs/templates/quatre.png"));
     templates.push_back(imread("imgs/templates/ronde.png"));
     templates.push_back(imread("imgs/templates/silence.png"));
+    templates.push_back(imread("imgs/templates/noire_pointee_bas.png"));
 
     for (int i = 0; i < templates.size(); i++) {
         cvtColor(templates[i], templates[i], cv::COLOR_BGR2GRAY);
@@ -197,6 +220,63 @@ void ProfileDetection::profileClassification(int d, Rect line, vector<Rect> boun
         cout << endl;
     }
     cout << endl;
+
+    vector<vector<int>> probas = vector<vector<int>>(profiles.size());    
+
+    for (int i = 0; i < profiles.size(); i++) {
+
+        probas[i] = vector<int>(templatesProfiles.size());
+
+        for (int j = 0; j < templatesProfiles.size(); j++) {
+            vector<int> diff = vector<int>(10);
+            //Calcul des différences entre le profil de l'objet et le profil de la classe
+            for (int k = 0; k < d; k++) {
+                diff[k] = abs(profiles[i][k] - templatesProfiles[j][k]);
+            }
+            
+            int mean = std::accumulate(diff.begin(), diff.end(), 0.0)/diff.size();
+            probas[i][j] = mean;
+        }
+    }
+
+    for (int i = 0; i < probas.size(); i++) {
+        for (int j = 0; j < probas[i].size(); j++) {
+            cout << probas[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    cout << endl;
+
+    vector<string> resultats = vector<string>(probas.size());
+    for (int i = 0; i < probas.size(); i++) {
+        vector<int>::iterator iter = probas[i].begin();
+        //int min = min_element((vector<int>)(probas[i]).begin(), probas[i].end());
+        int min = probas[i][0];
+        int minIndex = 0;
+        for (int j = 1; j < probas[i].size(); j++) {
+            if (min > probas[i][j]) {
+                min = probas[i][j];
+                minIndex = j;
+            }
+        }
+        resultats.push_back(objectType(minIndex));
+
+        
+
+        /*while ((iter = find_if(iter, probas[i].end(), isOne)) != probas[i].end())
+        {
+            // Do something with iter
+            int idx = distance(probas[i].begin(), iter);
+            resultats.push_back(objectType(idx));
+            iter++;
+        }*/
+    }
+
+    for (int j = 0; j < resultats.size(); j++) {
+        cout << resultats[j] << endl;
+    }
+    cout << endl;
+
 }
 
 /* Default Constructor of LineDetection class */

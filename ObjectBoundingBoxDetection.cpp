@@ -51,11 +51,12 @@ int ObjectBoundingBoxDetection::detect(Mat& m) {
 
 vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundingBox){
 	vector<Rect> boundingBoxes = vector<Rect>();
-	//Erosion de l'image pour supprimer les lignes
 
+	//Erosion de l'image pour supprimer les lignes
 	Mat kernel = getStructuringElement(MORPH_RECT, Size(1, 3), Point(0, 1));
 	Mat erodedImg;
 	erode(m, erodedImg, kernel);
+	
 	//On récupère la sous-image à partir du rectangle
 	Mat subImg = erodedImg(boundingBox);
 	imshow("subimg", subImg);
@@ -91,20 +92,17 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 
 	find.push_back(subImg.cols);
 	
+	//On parcourt les indices trouvés
 	for (int i = 0; i < find.size(); i+=2) {		
-		
-		Mat newSubImg = subImg(Rect(find[i], 0 , find[i + 1] - find[i], subImg.rows));
+		//Sous image à partir des nouveaux indices
+		Mat newSubImg = subImg(Rect(find[i], 0 , find[i + 1] - find[i], subImg.rows));			
 
-		Mat kernel = getStructuringElement(MORPH_RECT, Size(3, 1), Point(1, 0));
-		Mat newSubImgEroded = newSubImg;
-		//erode(newSubImg, newSubImgEroded, kernel);
-		//imshow("eroded2"+i, newSubImgEroded);				
-
+		//Projection verticale afin de trouver les indices de lignes des objets
 		Mat vertProj;
-		reduce(newSubImgEroded, vertProj, 1, REDUCE_SUM, CV_32SC1);
+		reduce(newSubImg, vertProj, 1, REDUCE_SUM, CV_32SC1);
 
 		vector<int> cols = vector<int>(vertProj.rows);
-		//lines va contenir 1 si le pixel de vertProj est supérieur à 1
+		//cols va contenir 1 si le pixel de vertProj est supérieur à 1
 		for (int row = 0; row < vertProj.rows; ++row) {
 			if (vertProj.at<int>(row, 0) > 0) {
 				cols[row] = 1;
@@ -136,18 +134,63 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 				_find.push_back(cols.size());
 			}
 		}
-
-		//for (int i = 0; i < _find.size(); i++) cout << _find[i] << endl;
-		//cout << endl;
 		
+		//Nouveau rectangle
 		Rect newRect = Rect(find[i], _find[0], find[i + 1] - find[i], _find[1] - _find[0]);
-		//cout << newRect.x << ' ' << newRect.y << ' ' << newRect.width << ' ' << newRect.height << endl;
+		
 		boundingBoxes.push_back(newRect);
-		rectangle(subImg,
-			Point(find[i], _find[0]),
-			Point(find[i + 1], _find[1]),
-			Scalar(255, 0, 0),
-			LINE_4);
+
+		//Test si le nouveau rectangle est proche du précédent
+		if (boundingBoxes.size() >= 2) {
+			Rect oldRect = boundingBoxes[boundingBoxes.size() - 2];
+			if (abs(oldRect.x + oldRect.width - newRect.x) < 15) {
+				//Si oui on fusionne les deux rectangles
+
+				if (oldRect.y <= newRect.y) {
+					Rect mergedRectangle = Rect(oldRect.x, oldRect.y, newRect.x - oldRect.x + newRect.width, newRect.y - oldRect.y + newRect.height);
+					boundingBoxes.pop_back();
+					boundingBoxes.pop_back();
+					boundingBoxes.push_back(mergedRectangle);
+
+					rectangle(subImg,
+						Point(mergedRectangle.x, mergedRectangle.y),
+						Point(mergedRectangle.x + mergedRectangle.width, mergedRectangle.y + mergedRectangle.height),
+						Scalar(255, 0, 0),
+						LINE_4);
+				}
+				else {
+					Rect mergedRectangle = Rect(oldRect.x, newRect.y, newRect.x - oldRect.x + newRect.width, oldRect.y - newRect.y + oldRect.height);
+					//Rect mergedRectangle = Rect(oldRect.x, oldRect.y, 50, 50);
+					imshow("kjvnskvn", subImg(mergedRectangle));
+					boundingBoxes.pop_back();
+					boundingBoxes.pop_back();
+					boundingBoxes.push_back(mergedRectangle);
+
+					rectangle(subImg,
+						Point(mergedRectangle.x, mergedRectangle.y),
+						Point(mergedRectangle.x + mergedRectangle.width, mergedRectangle.y + mergedRectangle.height),
+						Scalar(255, 0, 0),
+						LINE_4);
+				}
+
+			}
+			else {
+
+				rectangle(subImg,
+					Point(find[i], _find[0]),
+					Point(find[i + 1], _find[1]),
+					Scalar(255, 0, 0),
+					LINE_4);
+			}
+		}
+		else {
+
+			rectangle(subImg,
+				Point(find[i], _find[0]),
+				Point(find[i + 1], _find[1]),
+				Scalar(255, 0, 0),
+				LINE_4);
+		}
 		
 		//Pour le rythme il y a deux rectangles (4/4,3/4), donc 4 indices
 		if (_find.size() == 4) {

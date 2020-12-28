@@ -37,12 +37,27 @@ namespace objdetect {
 		 * Return 1 if successful, 0 otherwise. */
 		int detect(cv::Mat& m);
 
+		/*
+		* Calcule le profil d'une sous image de dimension égal à boundingBox, avec un pas égal à d
+		* Retourne le vecteur de distance des profils (profils gauches puis droit)
+		*/
 		std::vector<int> profile(int d, cv::Rect boundingBox, cv::Mat& img);
 
+		/*
+		* Calcule le profil d'une image img, avec un pas égal à d
+		* Retourne le vecteur de distance des profils (profils gauches puis droit)
+		*/
 		std::vector<int> profile(int d, cv::Mat& img);
 
+		/*
+		* Retourne un vecteur contenant les vecteurs de profil de chaque image template
+		*/
 		std::vector<std::vector<int>> getTemplatesProfiles(int d);
 
+		/*
+		* Compare les profils de chaque objet issu de boundingBoxes dans la ligne line, avec les profils des templates
+		* Attribue ensuite à chaque objet une classe selon la distance de son profil avec le profil des différents templates
+		*/
 		void profileClassification(int d, cv::Rect line, std::vector<cv::Rect> boundingBoxes, cv::Mat& img);
 	};
 }

@@ -13,13 +13,13 @@ void writeCSV(string, Mat);
 
 int main()
 {
-	Mat img = imread("C:/Users/nigro/source/repos/Project IN5x/Project IN5x/imgs/mary.jpg");
+	Mat img = imread("imgs/mary.jpg");
 	Mat imgGray;
 	cvtColor(img,imgGray, cv::COLOR_BGR2GRAY);
 	Mat imgBin;
 	threshold(imgGray, imgBin, 175, 255, THRESH_BINARY_INV);
 
-	LineDetection lD = LineDetection(0.6f); // Calls constructor
+	LineDetection lD = LineDetection(0.5f); // Calls constructor
 	lD.detect(imgBin); // Detect lines and sublines
 	
 	for (int i = 0; i < lD.boundingBoxs().size(); i++) {

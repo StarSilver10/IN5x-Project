@@ -1,8 +1,0 @@
-﻿  ProfileDetection.cpp
-C:\Users\nigro\source\repos\Project IN5x\Project IN5x\ProfileDetection.cpp(237,22): warning C4244: 'initialisation' : conversion de '_Ty' en 'int', perte possible de données
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\nigro\source\repos\Project IN5x\Project IN5x\ProfileDetection.cpp(91): warning C4715: 'objectType' : les chemins de contrôle ne retournent pas tous une valeur
-  Project IN5x.vcxproj -> C:\Users\nigro\source\repos\Project IN5x\x64\Debug\Project IN5x.exe

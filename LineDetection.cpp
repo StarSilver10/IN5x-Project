@@ -133,7 +133,7 @@ int LineDetection::generateBoundingBoxs(Mat& m, vector<int>& proj) {
 		}
 		int width = k + 1 - colStart;
 
-		_boundingBoxs.push_back(Rect(rowStart, colStart, height, width));
+		_boundingBoxs.push_back(Rect(colStart, rowStart, width, height));
 	}
 
 	return 1;

@@ -6,6 +6,8 @@
 * Description         :     Objects detection header
 **********************************************************************************/
 
+#ifndef OBJDETEC_H
+#define OBJDETEC_H
 
 #include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
@@ -53,3 +55,5 @@ namespace objdetect {
 			virtual int detect(cv::Mat& m) = 0;
 	};
 }
+
+#endif

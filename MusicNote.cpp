@@ -13,10 +13,11 @@ using namespace objdetect;
 /* -- Constructors/Destructors -- */
 
 /* Constructor setting all attributes */
-MusicNote::MusicNote(int seq, float dur, float pos) {
+MusicNote::MusicNote(int seq, float dur, float pos, bool silence) {
 	_sequencing = seq;
 	_duration = dur;
 	_positionLine = pos;
+	_silence = silence;
 }
 
 /* Default destructor */
@@ -39,4 +40,9 @@ float MusicNote::duration(void) {
 /* Getter of _positionLine */
 float MusicNote::positionLine(void) {
 	return _positionLine;
+}
+
+/* Getter of _silence */
+bool MusicNote::silence(void) {
+	return _silence;
 }

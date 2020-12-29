@@ -63,6 +63,7 @@ int MidiConversion::notesToMidi(string outName, vector<MusicNote> mn, int tempo)
 	MidiFile midifile = MidiFile();
 	midifile.addTrack();
 
+	int previousTick = 0;
 	for (vector<MusicNote>::iterator i = mn.begin(); i != mn.end(); i++) {
 		MusicNote& note = *i;
 		int pitch = noteToKeyNumber(note.positionLine());
@@ -73,8 +74,16 @@ int MidiConversion::notesToMidi(string outName, vector<MusicNote> mn, int tempo)
 		MidiMessage& m4 = m3;
 		m.setCommand(0x90, pitch, 127); // Start of note
 		m4.setCommand(0x80, pitch, 127); // End of note
-		midifile.addEvent(0, note.sequencing()*tempo, m);
-		midifile.addEvent(0, note.sequencing()*tempo + note.duration() * tempo, m4);
+		//midifile.addEvent(0, note.sequencing()*tempo, m);
+		//midifile.addEvent(0, note.sequencing()*tempo + note.duration() * tempo, m4);
+
+		//If note is not a silence
+		if (!note.silence()) {
+			midifile.addEvent(0, previousTick, m);
+			midifile.addEvent(0, previousTick + note.duration() * tempo, m4);
+		}
+		
+		previousTick = previousTick + note.duration() * tempo;
 	}
 	midifile.sortTracks();
 	midifile.write(outName);

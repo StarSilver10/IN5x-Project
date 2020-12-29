@@ -32,7 +32,7 @@ int main()
 		Rect _rect = lD.boundingBoxs()[i];
 		//cout << _rect.x << ' ' << _rect.y << ' ' << _rect.width << ' ' << _rect.height << endl;
 		cout << "New Line" << endl;
-		ObjectBoundingBoxDetection oD = ObjectBoundingBoxDetection();
+		ObjectBoundingBoxDetection oD = ObjectBoundingBoxDetection(0.00714);
 		oD.searchBoundingBoxes(imgBin, lD.boundingBoxs()[i]);
 		
 		//Affichage des rectangles

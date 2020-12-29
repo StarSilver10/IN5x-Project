@@ -28,6 +28,8 @@ namespace objdetect {
 			 * It's the pitch of the note */
 			float _positionLine;
 
+			bool _silence;
+
 		public:
 
 		/* ---- Methods ---- */
@@ -36,7 +38,7 @@ namespace objdetect {
 			/* -- Constructors/Destructors -- */
 
 			/* Constructor setting all attributes */
-			MusicNote(int seq, float dur, float pos);
+			MusicNote(int seq, float dur, float pos, bool silence);
 
 			/* Default destructor */
 			~MusicNote(void);
@@ -51,6 +53,9 @@ namespace objdetect {
 
 			/* Getter of _positionLine */
 			float positionLine(void);
+
+			/* Getter of _silence */
+			bool silence(void);
 	};
 }
 

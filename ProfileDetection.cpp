@@ -133,7 +133,6 @@ float lineToNote(int line) {
     case 6: return 2.0f;
     case 7: return 1.5f;
     case 8: return 1.0f;
-
     }
 }
 
@@ -153,12 +152,11 @@ vector<int> ProfileDetection::profile(int d, cv::Rect boundingBox, cv::Mat& img)
     vector<int> indices = linspace<int>(1, boundingBox.height-1, d / 2);
 
     for (int i = 0; i < d / 2; i++) {
-        //find
+
         const uchar* row = subImg.ptr<uchar>(indices[i]);
         bool foundLeft = false;
         bool foundRight = false;
         for (int col = 0; col < subImg.cols; col++) {
-            //cout << indices[i] << endl;
             if (row[col] > 0 && !foundLeft) {
                 leftProfiles.push_back(col);
                 foundLeft = true;
@@ -181,9 +179,7 @@ vector<int> ProfileDetection::profile(int d, cv::Rect boundingBox, cv::Mat& img)
 
 vector<int> ProfileDetection::profile(int d, cv::Mat& img) {
     vector<int> leftProfiles = vector<int>();
-    vector<int> rightProfiles = vector<int>();
-    //cout << subImg << endl << endl;
-    //cout << type2str(subImg.type()) << endl;
+    vector<int> rightProfiles = vector<int>();    
 
     vector<int> indices = linspace<int>(0, img.rows-1, d / 2);
 
@@ -298,7 +294,6 @@ vector<noteType> ProfileDetection::profileClassification(int d, Rect line, vecto
     vector<noteType> resultats = vector<noteType>();
     for (int i = 0; i < probas.size(); i++) {
         vector<int>::iterator iter = probas[i].begin();
-        //int min = min_element((vector<int>)(probas[i]).begin(), probas[i].end());
         int min = probas[i][0];
         int minIndex = 0;
         for (int j = 1; j < probas[i].size(); j++) {
@@ -308,16 +303,7 @@ vector<noteType> ProfileDetection::profileClassification(int d, Rect line, vecto
             }
         }
         resultats.push_back(objectType(minIndex));
-
-        
-
-        /*while ((iter = find_if(iter, probas[i].end(), isOne)) != probas[i].end())
-        {
-            // Do something with iter
-            int idx = distance(probas[i].begin(), iter);
-            resultats.push_back(objectType(idx));
-            iter++;
-        }*/
+       
     }
 
     static const char* typeNames[] = { "barre", "blanche_bas", "blanche_haut" , "cle_sol","croche","dieze_armature","noire_bas","noire_haut","quatre","ronde","silence","noire_pointee_bas","barre_fin"};
@@ -342,7 +328,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
     linesComplete.push_back(lines[lines.size()-1]);
     for (int i = 0; i < boundingBoxes.size(); i++) {
         Rect boundingBox = boundingBoxes[i];
-        int duration = 0;
+        float duration = 0;
         float note = -1.0f;
         int subline = 0;
         int y = 0;
@@ -352,7 +338,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y;
             subline = getMostCloseLine(linesComplete, y) + 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case blanche_haut:
@@ -360,7 +346,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y + boundingBox.height;
             subline = getMostCloseLine(linesComplete, y) - 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case noire_bas:
@@ -368,7 +354,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y;
             subline = getMostCloseLine(linesComplete, y) + 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case noire_haut:
@@ -376,7 +362,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y + boundingBox.height;
             subline = getMostCloseLine(linesComplete, y) - 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case croche:
@@ -384,7 +370,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y + boundingBox.height;
             subline = getMostCloseLine(linesComplete, y) - 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case ronde:
@@ -392,7 +378,7 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y + boundingBox.height;
             subline = getMostCloseLine(linesComplete, y) - 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case noire_pointee_bas:
@@ -400,13 +386,13 @@ vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteT
             y = line.y + boundingBox.y + (0.06 * boundingBox.height);
             subline = getMostCloseLine(linesComplete, y) + 1;
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, false));
             sequencing++;
             break;
         case silence:
             duration = 1;       
             note = lineToNote(subline);
-            notes.push_back(MusicNote(sequencing, duration, note));
+            notes.push_back(MusicNote(sequencing, duration, note, true));
             sequencing++;
             break;
         }

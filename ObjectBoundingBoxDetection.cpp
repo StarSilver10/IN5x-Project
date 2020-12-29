@@ -143,7 +143,7 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 		//Test si le nouveau rectangle est proche du précédent
 		if (boundingBoxes.size() >= 2) {
 			Rect oldRect = boundingBoxes[boundingBoxes.size() - 2];
-			if (abs(oldRect.x + oldRect.width - newRect.x) < 15) {
+			if (abs(oldRect.x + oldRect.width - newRect.x) < (mergeRectanglesThreshold*boundingBox.width)) {
 				//Si oui on fusionne les deux rectangles
 
 				if (oldRect.y <= newRect.y) {
@@ -211,8 +211,8 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 }
 
 /* Default Constructor of LineDetection class */
-ObjectBoundingBoxDetection::ObjectBoundingBoxDetection(void) : ObjectDetection::ObjectDetection() {
-	
+ObjectBoundingBoxDetection::ObjectBoundingBoxDetection(double _mergeRectanglesThreshold) : ObjectDetection::ObjectDetection() {
+	mergeRectanglesThreshold = _mergeRectanglesThreshold;
 }
 
 /* Default destructor of LineDetection class */

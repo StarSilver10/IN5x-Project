@@ -10,9 +10,11 @@
 #define PROFDETEC_H
 
 #include "ObjectDetection.hpp"
+#include "MusicNote.hpp"
 
 namespace objdetect {
 
+	
 	/***********************************
 	 * Class : ObjectDetection
 	 **********************************/
@@ -58,7 +60,9 @@ namespace objdetect {
 		* Compare les profils de chaque objet issu de boundingBoxes dans la ligne line, avec les profils des templates
 		* Attribue ensuite à chaque objet une classe selon la distance de son profil avec le profil des différents templates
 		*/
-		void profileClassification(int d, cv::Rect line, std::vector<cv::Rect> boundingBoxes, cv::Mat& img);
+		std::vector<objdetect::noteType> profileClassification(int d, cv::Rect line, std::vector<cv::Rect> boundingBoxes, cv::Mat& img);
+
+		std::vector<objdetect::MusicNote> getMusicNotesFromClassification(std::vector<objdetect::noteType> classification, cv::Rect line, std::vector<cv::Rect> boundingBoxes, std::vector<int> lines);
 	};
 }
 

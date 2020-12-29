@@ -16,6 +16,23 @@
 
 namespace objdetect {
 
+	enum noteType
+	{
+		barre,
+		blanche_bas,
+		blanche_haut,
+		cle_sol,
+		croche,
+		dieze_armature,
+		noire_bas,
+		noire_haut,
+		quatre,
+		ronde,
+		silence,
+		noire_pointee_bas,
+		barre_fin
+	};
+
 	/***********************************
 	 * Class : ObjectDetection
 	 **********************************/

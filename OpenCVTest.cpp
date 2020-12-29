@@ -4,6 +4,8 @@
 #include "ProfileDetection.hpp"
 #include "ObjectBoundingBoxDetection.hpp"
 #include "LineDetection.hpp"
+#include "MidiConversion.hpp"
+#include "MusicNote.hpp"
 
 using namespace std;
 using namespace cv;
@@ -22,6 +24,10 @@ int main()
 	LineDetection lD = LineDetection(0.5f); // Calls constructor
 	lD.detect(imgBin); // Detect lines and sublines
 	
+	vector<vector<objdetect::MusicNote>> musicNotesGlobal = vector<vector<objdetect::MusicNote>>();
+
+	
+
 	for (int i = 0; i < lD.boundingBoxs().size(); i++) {
 		Rect _rect = lD.boundingBoxs()[i];
 		//cout << _rect.x << ' ' << _rect.y << ' ' << _rect.width << ' ' << _rect.height << endl;
@@ -36,9 +42,20 @@ int main()
 		}*/
 
 		ProfileDetection profileDetection = ProfileDetection();
-		profileDetection.profileClassification(10, lD.boundingBoxs()[i], oD.boundingBoxs(), imgBin);
+		vector<noteType> resultats = profileDetection.profileClassification(20, lD.boundingBoxs()[i], oD.boundingBoxs(), imgBin);
+
+		musicNotesGlobal.push_back(profileDetection.getMusicNotesFromClassification(resultats, lD.boundingBoxs()[i], oD.boundingBoxs(), lD.subLines()[i]));
+
 		cout << endl;		
 	}
+
+	vector<objdetect::MusicNote> allNotes = musicNotesGlobal[0];
+	if (musicNotesGlobal.size() > 1) {
+		for (int i = 1; i < musicNotesGlobal.size(); i++) {
+			allNotes.insert(allNotes.end(), musicNotesGlobal[i].begin(), musicNotesGlobal[i].end());
+		}
+	}
+	MidiConversion::notesToMidi("mary.midi", allNotes, 100);
 
 	waitKey(0);
 	return 0;

@@ -6,6 +6,9 @@
 *     Description         :      Class MusicNote header
 **********************************************************************************/
 
+#ifndef MUSICNOTE_H
+#define MUSICNOTE_H
+
 namespace objdetect {
 
 	/***********************************
@@ -50,3 +53,5 @@ namespace objdetect {
 			float positionLine(void);
 	};
 }
+
+#endif

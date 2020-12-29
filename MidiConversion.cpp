@@ -6,9 +6,10 @@
  *     Description         :     Convert into a midi file
  **********************************************************************************/
 
-
-#include <MidiFile.h>
-#include <Options.h>
+//#include <MidiFile.h>
+//#include <Options.h>
+#include "craigsapp-midifile-988d55b/include/MidiFile.h"
+#include "craigsapp-midifile-988d55b/include/Options.h"
 #include <iostream>
 #include <math.h>
 
@@ -75,7 +76,7 @@ int MidiConversion::notesToMidi(string outName, vector<MusicNote> mn, int tempo)
 		midifile.addEvent(0, note.sequencing()*tempo, m);
 		midifile.addEvent(0, note.sequencing()*tempo + note.duration() * tempo, m4);
 	}
-
+	midifile.sortTracks();
 	midifile.write(outName);
 
 	return 1;

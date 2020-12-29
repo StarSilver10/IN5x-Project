@@ -6,8 +6,10 @@
 *     Description         :      MidiConversion class header
 **********************************************************************************/
 
-#include <MidiFile.h>
-#include <Options.h>
+//#include <MidiFile.h>
+//#include <Options.h>
+#include "craigsapp-midifile-988d55b/include/MidiFile.h"
+#include "craigsapp-midifile-988d55b/include/Options.h"
 #include <iostream>
 
 #include "MusicNote.hpp"

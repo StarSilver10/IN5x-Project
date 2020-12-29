@@ -18,12 +18,14 @@ using namespace std;
 using namespace cv;
 using namespace objdetect;
 
+int sequencing = 0;
+
 
 /***********************************
  * Class : ObjectBoundingBoxDetection
  **********************************/
 
-
+//Renvoie un vecteur de num indices également répartis entre start et end
 template <typename T>
 std::vector<T> linspace(double start, double end, double num)
 {
@@ -73,20 +75,65 @@ string type2str(int type) {
     return r;
 }
 
-string objectType(int type) {
+noteType objectType(int type) {
+    noteType _type = noteType::barre;
     switch (type) {
-    case 0: return "barre";
-    case 1: return "blanche_bas";
-    case 2: return "blanche_haut";
-    case 3: return "cle_sol";
-    case 4: return "croche";
-    case 5: return "dieze_armature";
-    case 6: return "noire_bas";
-    case 7: return "noire_haut";
-    case 8: return "quatre";
-    case 9: return "ronde";
-    case 10: return "silence";
-    case 11: return "noire_pointee_bas";
+    case 0: _type = barre;
+        break;
+    case 1: _type = blanche_bas;
+        break;
+    case 2: _type = blanche_haut;
+        break;
+    case 3: _type = cle_sol;
+        break;
+    case 4: _type = croche;
+        break;
+    case 5: _type = dieze_armature;
+        break;
+    case 6: _type = noire_bas;
+        break;
+    case 7: _type = noire_haut;
+        break;
+    case 8: _type = quatre;
+        break;
+    case 9: _type = ronde;
+        break;
+    case 10: _type = silence;
+        break;
+    case 11: _type = noire_pointee_bas;
+        break;
+    case 12: _type = barre_fin;
+        break;
+    }
+    return _type;
+}
+
+int getMostCloseLine(vector<int> lines, int y) {
+    int minDistance = abs(y - lines[0]);
+    int minIndex = 0;
+    for (int i = 1; i < lines.size(); i++) {
+        int newDistance = abs(y - lines[i]);
+        if (newDistance < minDistance) {
+            minDistance = newDistance;
+            minIndex = i;
+        }
+    }
+    return minIndex;
+}
+
+float lineToNote(int line) {
+    switch (line) {
+    case -1: return 5.5f;
+    case 0: return 5.0f;
+    case 1: return 4.5f;
+    case 2: return 4.0f;
+    case 3: return 3.5f;
+    case 4: return 3.0f;
+    case 5: return 2.5f;
+    case 6: return 2.0f;
+    case 7: return 1.5f;
+    case 8: return 1.0f;
+
     }
 }
 
@@ -184,6 +231,7 @@ vector<vector<int>> ProfileDetection::getTemplatesProfiles(int d) {
     templates.push_back(imread("imgs/templates/ronde.png"));
     templates.push_back(imread("imgs/templates/silence.png"));
     templates.push_back(imread("imgs/templates/noire_pointee_bas.png"));
+    templates.push_back(imread("imgs/templates/barre_fin.png"));
 
     for (int i = 0; i < templates.size(); i++) {
         cvtColor(templates[i], templates[i], cv::COLOR_BGR2GRAY);
@@ -194,7 +242,7 @@ vector<vector<int>> ProfileDetection::getTemplatesProfiles(int d) {
     return profiles;
 }
 
-void ProfileDetection::profileClassification(int d, Rect line, vector<Rect> boundingBoxes, Mat& img) {
+vector<noteType> ProfileDetection::profileClassification(int d, Rect line, vector<Rect> boundingBoxes, Mat& img) {
     Mat kernel = getStructuringElement(MORPH_RECT, Size(1, 3), Point(0, 1));
     Mat erodedImg;
     erode(img, erodedImg, kernel);
@@ -228,7 +276,7 @@ void ProfileDetection::profileClassification(int d, Rect line, vector<Rect> boun
         probas[i] = vector<int>(templatesProfiles.size());
 
         for (int j = 0; j < templatesProfiles.size(); j++) {
-            vector<int> diff = vector<int>(10);
+            vector<int> diff = vector<int>(d);
             //Calcul des différences entre le profil de l'objet et le profil de la classe
             for (int k = 0; k < d; k++) {
                 diff[k] = abs(profiles[i][k] - templatesProfiles[j][k]);
@@ -247,7 +295,7 @@ void ProfileDetection::profileClassification(int d, Rect line, vector<Rect> boun
     }
     cout << endl;
 
-    vector<string> resultats = vector<string>(probas.size());
+    vector<noteType> resultats = vector<noteType>();
     for (int i = 0; i < probas.size(); i++) {
         vector<int>::iterator iter = probas[i].begin();
         //int min = min_element((vector<int>)(probas[i]).begin(), probas[i].end());
@@ -272,12 +320,102 @@ void ProfileDetection::profileClassification(int d, Rect line, vector<Rect> boun
         }*/
     }
 
+    static const char* typeNames[] = { "barre", "blanche_bas", "blanche_haut" , "cle_sol","croche","dieze_armature","noire_bas","noire_haut","quatre","ronde","silence","noire_pointee_bas","barre_fin"};
+
     for (int j = 0; j < resultats.size(); j++) {
-        cout << resultats[j] << endl;
+        cout << typeNames[resultats[j]] << endl;
     }
     cout << endl;
 
+    return resultats;
+
 }
+
+vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteType> classification, Rect line, vector<Rect> boundingBoxes, vector<int> lines) {
+    vector<MusicNote> notes = vector<MusicNote>();
+    
+    vector<int> linesComplete = vector<int>();
+    for (int i = 0; i < lines.size()-1; i++) {
+        linesComplete.push_back(lines[i]);
+        linesComplete.push_back((lines[i] + lines[i + 1]) / 2);
+    }
+    linesComplete.push_back(lines[lines.size()-1]);
+    for (int i = 0; i < boundingBoxes.size(); i++) {
+        Rect boundingBox = boundingBoxes[i];
+        int duration = 0;
+        float note = -1.0f;
+        int subline = 0;
+        int y = 0;
+        switch (classification[i]) {
+        case blanche_bas:
+            duration = 2;
+            y = line.y + boundingBox.y;
+            subline = getMostCloseLine(linesComplete, y) + 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case blanche_haut:
+            duration = 2;
+            y = line.y + boundingBox.y + boundingBox.height;
+            subline = getMostCloseLine(linesComplete, y) - 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case noire_bas:
+            duration = 1;
+            y = line.y + boundingBox.y;
+            subline = getMostCloseLine(linesComplete, y) + 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case noire_haut:
+            duration = 1;
+            y = line.y + boundingBox.y + boundingBox.height;
+            subline = getMostCloseLine(linesComplete, y) - 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case croche:
+            duration = 0.5;
+            y = line.y + boundingBox.y + boundingBox.height;
+            subline = getMostCloseLine(linesComplete, y) - 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case ronde:
+            duration = 4;
+            y = line.y + boundingBox.y + boundingBox.height;
+            subline = getMostCloseLine(linesComplete, y) - 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case noire_pointee_bas:
+            duration = 1.5;
+            y = line.y + boundingBox.y + (0.06 * boundingBox.height);
+            subline = getMostCloseLine(linesComplete, y) + 1;
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        case silence:
+            duration = 1;       
+            note = lineToNote(subline);
+            notes.push_back(MusicNote(sequencing, duration, note));
+            sequencing++;
+            break;
+        }
+       
+    }
+    return notes;
+}
+
+
 
 /* Default Constructor of LineDetection class */
 ProfileDetection::ProfileDetection(void) : ObjectDetection::ObjectDetection() {

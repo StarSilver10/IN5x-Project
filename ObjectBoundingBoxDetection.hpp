@@ -21,7 +21,7 @@ namespace objdetect {
 		/* ---- Attributes ---- */
 	private:
 		double mergeRectanglesThreshold;
-
+		int lineNumber;
 		/* ---- Methods ---- */
 	private:
 
@@ -29,7 +29,7 @@ namespace objdetect {
 		/* -- Constructors / Destructors-- */
 
 		/* Default Constructor of LineDetection class */
-		ObjectBoundingBoxDetection(double mergeRectanglesThreshold);
+		ObjectBoundingBoxDetection(double mergeRectanglesThreshold, int lineNumber);
 
 		/* Default destructor of LineDetection class */
 		~ObjectBoundingBoxDetection(void);

@@ -62,6 +62,9 @@ namespace objdetect {
 		*/
 		std::vector<objdetect::noteType> profileClassification(int d, cv::Rect line, std::vector<cv::Rect> boundingBoxes, cv::Mat& img);
 
+		/*
+		* Convertis les résultats de la classification en MusicNotes convertibles en MIDI	
+		*/
 		std::vector<objdetect::MusicNote> getMusicNotesFromClassification(std::vector<objdetect::noteType> classification, cv::Rect line, std::vector<cv::Rect> boundingBoxes, std::vector<int> lines);
 	};
 }

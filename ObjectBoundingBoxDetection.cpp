@@ -16,6 +16,7 @@ using namespace std;
 using namespace cv;
 using namespace objdetect;
 
+
 void _writeCSV(string filename, Mat m)
 {
 	ofstream myfile;
@@ -28,6 +29,7 @@ bool isOne(int x) {
 	return x == 1;
 }
 
+//Draws a line on image
 void MyLine(Mat img, Point start, Point end)
 {
 	int thickness = 1;
@@ -59,7 +61,7 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 	
 	//On récupère la sous-image à partir du rectangle
 	Mat subImg = erodedImg(boundingBox);
-	imshow("subimg", subImg);
+	
 	//Projection horizontale de l'image
 	Mat horizProj;
 	reduce(subImg, horizProj, 0, REDUCE_SUM, CV_32SC1); 
@@ -161,7 +163,6 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 				else {
 					Rect mergedRectangle = Rect(oldRect.x, newRect.y, newRect.x - oldRect.x + newRect.width, oldRect.y - newRect.y + oldRect.height);
 					//Rect mergedRectangle = Rect(oldRect.x, oldRect.y, 50, 50);
-					imshow("kjvnskvn", subImg(mergedRectangle));
 					boundingBoxes.pop_back();
 					boundingBoxes.pop_back();
 					boundingBoxes.push_back(mergedRectangle);
@@ -195,7 +196,6 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 		//Pour le rythme il y a deux rectangles (4/4,3/4), donc 4 indices
 		if (_find.size() == 4) {
 			Rect _newRect = Rect(find[i], _find[2], find[i + 1] - find[i], _find[3] - _find[2]);
-			//cout << _newRect.x << ' ' << _newRect.y << ' ' << _newRect.width << ' ' << _newRect.height << endl;
 			boundingBoxes.push_back(_newRect);
 
 			rectangle(subImg,
@@ -205,14 +205,15 @@ vector<Rect> ObjectBoundingBoxDetection::searchBoundingBoxes(Mat& m, Rect boundi
 				LINE_4);
 		}
 	}
-	imshow("Sub image with rectangles"+rand(), subImg);
+	imshow("Sub image with rectangles "+lineNumber, subImg);
 	_boundingBoxs = boundingBoxes;
 	return boundingBoxes;
 }
 
 /* Default Constructor of LineDetection class */
-ObjectBoundingBoxDetection::ObjectBoundingBoxDetection(double _mergeRectanglesThreshold) : ObjectDetection::ObjectDetection() {
+ObjectBoundingBoxDetection::ObjectBoundingBoxDetection(double _mergeRectanglesThreshold , int _lineNumber) : ObjectDetection::ObjectDetection() {
 	mergeRectanglesThreshold = _mergeRectanglesThreshold;
+	lineNumber = _lineNumber;
 }
 
 /* Default destructor of LineDetection class */

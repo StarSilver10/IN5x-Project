@@ -289,14 +289,14 @@ vector<noteType> ProfileDetection::profileClassification(int d, Rect line, vecto
         }
     }
 
-    /* Affichage des probas
-    for (int i = 0; i < probas.size(); i++) {
-        for (int j = 0; j < probas[i].size(); j++) {
-            cout << probas[i][j] << ' ';
-        }
-        cout << endl;
-    }
-    cout << endl;*/
+    // //Affichage des probas
+    //for (int i = 0; i < probas.size(); i++) {
+    //    for (int j = 0; j < probas[i].size(); j++) {
+    //        cout << probas[i][j] << ' ';
+    //    }
+    //    cout << endl;
+    //}
+    //cout << endl;
 
     //On calcule la classe des objets en récupérant la classe qui a la plus forte proba pour chaque objet
     vector<noteType> resultats = vector<noteType>();
@@ -325,7 +325,7 @@ vector<noteType> ProfileDetection::profileClassification(int d, Rect line, vecto
 
 }
 
-vector<MusicNote> ProfileDetection::getMusicNotesFromClassification(vector<noteType> classification, Rect line, vector<Rect> boundingBoxes, vector<int> lines) {
+vector<MusicNote> ProfileDetection::getMusicNotesFromProfilClassification(vector<noteType> classification, Rect line, vector<Rect> boundingBoxes, vector<int> lines) {
     vector<MusicNote> notes = vector<MusicNote>();
     
     //J'ajoute aux sous-lignes les lignes intermédiaire car une note peut se trouver entre deux sous-lignes

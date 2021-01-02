@@ -16,10 +16,10 @@ namespace objdetect {
 
 	
 	/***********************************
-	 * Class : ObjectDetection
+	 * Class : ProfileDetection
 	 **********************************/
 	class ProfileDetection : public virtual ObjectDetection {
-
+		friend class DensityDetection;
 		/* ---- Attributes ---- */
 
 
@@ -65,7 +65,7 @@ namespace objdetect {
 		/*
 		* Convertis les résultats de la classification en MusicNotes convertibles en MIDI	
 		*/
-		std::vector<objdetect::MusicNote> getMusicNotesFromClassification(std::vector<objdetect::noteType> classification, cv::Rect line, std::vector<cv::Rect> boundingBoxes, std::vector<int> lines);
+		std::vector<objdetect::MusicNote> getMusicNotesFromProfilClassification(std::vector<objdetect::noteType> classification, cv::Rect line, std::vector<cv::Rect> boundingBoxes, std::vector<int> lines);
 	};
 }
 

@@ -470,7 +470,7 @@ vector<MusicNote> DensityDetection::getMusicNotesFromDensityClassification(vecto
 		int y = 0;
 		switch (classification[i]) {
 		case blanche_bas:
-			duration = 1;
+			duration = 2;
 			y = line.y + boundingBox.y;
 			//+1 car la vraie position de la note est une sous-ligne plus bas
 			subline = getMostCloseLine(linesComplete, y) + 1;
@@ -478,7 +478,7 @@ vector<MusicNote> DensityDetection::getMusicNotesFromDensityClassification(vecto
 			notes.push_back(MusicNote(0, duration, note, false));
 			break;
 		case blanche_haut:
-			duration = 1;
+			duration = 2;
 			y = line.y + boundingBox.y + boundingBox.height;
 			//-1 car la vraie position de la note est une sous-ligne plus haut
 			subline = getMostCloseLine(linesComplete, y) - 1;

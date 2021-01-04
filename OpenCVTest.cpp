@@ -56,7 +56,7 @@ int main()
 		musicNotesGlobalProfile.push_back(profileDetection.getMusicNotesFromProfilClassification(resultatsProfile, lD.boundingBoxs()[i], oD.boundingBoxs(), lD.subLines()[i]));
 
 		//On convertit cette classification par Densité en MusicNotes qui vont être converties en MIDI
-		musicNotesGlobalDensity.push_back(densityDetection.getMusicNotesFromDensityClassification(resultatsProfile, lD.boundingBoxs()[i], oD.boundingBoxs(), lD.subLines()[i]));
+		musicNotesGlobalDensity.push_back(densityDetection.getMusicNotesFromDensityClassification(resultatsDensity, lD.boundingBoxs()[i], oD.boundingBoxs(), lD.subLines()[i]));
 	}
 
 	////On concatène toutes les notes de chaque ligne (Profile)
@@ -71,7 +71,7 @@ int main()
 	vector<objdetect::MusicNote> allNotes = musicNotesGlobalDensity[0];
 	if (musicNotesGlobalDensity.size() > 1) {
 		for (int i = 1; i < musicNotesGlobalDensity.size(); i++) {
-			allNotes.insert(allNotes.end(), musicNotesGlobalDensity[i].begin(), musicNotesGlobalDensity[i].end());
+	    	allNotes.insert(allNotes.end(), musicNotesGlobalDensity[i].begin(), musicNotesGlobalDensity[i].end());
 		}
 	}
 	cout << "TAILLE " << allNotes.size() << endl;
@@ -83,7 +83,7 @@ int main()
 	//cout << endl;
 
 	//On convertit les notes en MIDI
-	MidiConversion::notesToMidi("mary6.midi", allNotes, 100);
+	MidiConversion::notesToMidi("mary5.midi", allNotes, 100);
 
 	waitKey(0);
 	return 0;

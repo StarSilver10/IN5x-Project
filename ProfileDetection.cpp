@@ -314,12 +314,12 @@ vector<noteType> ProfileDetection::profileClassification(int d, Rect line, vecto
        
     }
 
-    /* Affichage des résulats
+    //Affichage des résulats
     static const char* typeNames[] = { "barre", "blanche_bas", "blanche_haut" , "cle_sol","croche","dieze_armature","noire_bas","noire_haut","quatre","ronde","silence","noire_pointee_bas","barre_fin"};
     for (int j = 0; j < resultats.size(); j++) {
         cout << typeNames[resultats[j]] << endl;
     }
-    cout << endl;*/
+    cout << endl;
 
     return resultats;
 
